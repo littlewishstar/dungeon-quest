@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dungeon Architect</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="game.js" defer></script>
+</head>
+<body>
+    <main class="app">
+        <h1>🏰 Dungeon Architect</h1>
+        <p>Design your dungeon. Can the hero reach the treasure?</p>
+
+        <div class="toolbar">
+            <button data-tool="floor">Floor</button>
+            <button data-tool="wall">Wall</button>
+            <button data-tool="player">🧙 Player</button>
+            <button data-tool="treasure">💎 Treasure</button>
+            <button id="validate">Validate Dungeon</button>
+        </div>
+
+        <p id="status">Selected tool: Floor</p>
+        <p id="validation-message">Click "Validate Dungeon" to check your design.</p>
+        <div id="grid" aria-label="Dungeon editor"></div>
+    </main>
+</body>
+</html>

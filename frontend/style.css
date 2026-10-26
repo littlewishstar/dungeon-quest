@@ -1,0 +1,155 @@
+
+/* ========================================
+   1. DESIGN SETTINGS
+   Change shared values here
+======================================== */
+
+:root {
+    /* Colors */
+    --color-background: #171923;
+    --color-text: #f7fafc;
+    --color-panel: #2d3748;
+    --color-border: #4a5568;
+    --color-floor: #718096;
+    --color-player: #2b6cb0;
+    --color-treasure: #975a16;
+    --color-selected: #805ad5;
+    --color-focus: #f6e05e;
+
+    /* Spacing */
+    --space-small: 8px;
+    --space-medium: 16px;
+    --space-large: 24px;
+
+    /* Layout */
+    --app-width: 650px;
+    --grid-width: 600px;
+    --grid-gap: 3px;
+
+    /* Shape */
+    --radius-small: 3px;
+    --radius-medium: 12px;
+}
+
+/* ========================================
+   2. GLOBAL STYLES
+======================================== */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: var(--space-large);
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: Arial, sans-serif;
+}
+
+/* ========================================
+   3. PAGE LAYOUT
+======================================== */
+
+.app {
+    background: var(--color-panel);
+    border-radius: var(--radius-medium);
+    padding: var(--space-small);
+    width: 100%;
+    max-width: calc(var(--app-width) - 100px);
+    margin: 0 auto;
+    text-align: center;
+}
+
+/* ========================================
+   4. TOOLBAR
+======================================== */
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-small);
+    margin: var(--space-large) 0;
+}
+
+button {
+    padding: 16px 20px;
+    border: 1px solid #718096;
+    border-radius: var(--radius-medium);
+    background: var(--color-panel);
+    color: var(--color-text);
+    cursor: pointer;
+}
+
+button:hover {
+    background: var(--color-border);
+}
+
+button.active {
+    background: var(--color-selected);
+}
+
+button.active:hover {
+    background: var(--color-selected);
+}
+
+/* ========================================
+   5. DUNGEON GRID
+======================================== */
+
+#grid {
+    display: grid;
+    gap: var(--grid-gap);
+    width: 100%;
+    max-width: var(--grid-width);
+    margin: var(--space-large) auto;
+}
+
+/* ========================================
+   6. GRID TILES
+======================================== */
+
+.tile {
+    display: grid;
+    place-items: center;
+
+    aspect-ratio: 1;
+    min-width: 0;
+    padding: 0;
+
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-medium);
+    background: var(--color-floor);
+
+    font-size: clamp(12px, 3vw, 22px);
+    cursor: pointer;
+}
+
+.tile.wall {
+    background: var(--color-panel);
+}
+
+.tile.player {
+    background: var(--color-player);
+}
+
+.tile.treasure {
+    background: var(--color-treasure);
+}
+
+.tile.path {
+    background: #68d391;
+    border-color: #48bb78;
+    outline: 3px solid #facc15;
+    outline-offset: -4px;
+}
+
+/* ========================================
+   7. ACCESSIBILITY
+======================================== */
+
+button:focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 1px;
+}
