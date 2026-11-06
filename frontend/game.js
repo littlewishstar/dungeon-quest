@@ -17,12 +17,13 @@ const gridData = Array.from({ length: ROWS }, () =>
    Connect JavaScript to the page
 ======================================== */
 
-const grid = document.querySelector("#grid");
-const status = document.querySelector("#status");
-const validationMessage = document.querySelector("#validation-message");
+const grid = document.querySelector("#dungeon-grid");
+const currentToolDisplay = document.querySelector("#current-tool");
+const validationMessage = document.querySelector("#validation-status");
 const toolButtons = document.querySelectorAll("[data-tool]");
-const validateButton = document.querySelector("#validate");
-
+const validateButton = document.querySelector("#validate-dungeon-button");
+const saveButton = document.querySelector("#save-dungeon-button");
+const loadButton = document.querySelector("#load-dungeon-button");
 
 /* ========================================
    TOOL CONFIGURATION
@@ -71,12 +72,12 @@ let selectedTool = "floor";
 ======================================== */
 
 function selectTool(toolName) {
-
+    console.log("Tool selected:", toolName);
     // Remember the selected tool
     selectedTool = toolName;
 
     // Update the status message
-    status.textContent = "Selected tool: " + toolName;
+    currentToolDisplay.textContent = "Selected tool: " + toolName;
 
     // Highlight the selected button
     toolButtons.forEach(function(button) {
@@ -175,6 +176,45 @@ function validateDungeon() {
 }
 
 
+async function validateDungeonWithAPI() {
+    console.log("API validation function called!");
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/validate", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                grid: gridData
+            })
+        });
+
+        const result = await response.json();
+
+        console.log("Backend validation result:", result);
+
+        if(!result.path){
+            validationMessage.textContent = result.message || "Dungeon is invalid! No path to the treasure.";
+            validationMessage.style.color = "red";
+            return;
+        }
+
+        if (result.path.length === 0) {
+            validationMessage.textContent = result.message || "Dungeon is invalid! No path to the treasure.";
+            validationMessage.style.color = "red";
+            return;
+        }else{
+            validationMessage.textContent = result.message || "Dungeon is valid!";
+            validationMessage.style.color = "green";
+            displayPath(result.path);
+        }
+
+        // TODO: Display the result in your game's UI.
+    } catch (error) {
+        console.error("Could not connect to the backend:", error);
+    }
+}
+
 
 /* ========================================
    TILE CREATION
@@ -185,6 +225,7 @@ function createTile(tileType, i, j) {
     const tile = document.createElement("button");
     tile.dataset.row = i;
     tile.dataset.col = j;
+    tile.classList.add("tile");
 
     updateTile(tile, tileType);
 
@@ -280,20 +321,6 @@ function createGrid() {
     }
 }
 
-
-/* ========================================
-   GAME INITIALIZATION
-   Start the game
-======================================== */
-
-function main() {
-    createGrid();
-    setupToolbar();
-    setupValidateButton();
-    selectTool("floor");
-}
-
-
 /* ========================================
    PATH FINDING
    Path Finding algorithm to find the shortest path from any two tiles in the grid.
@@ -347,8 +374,8 @@ function findShortestPath(startRow, startCol, endRow, endCol) {
     if (path.length === 0) {
         validationMessage.textContent = "No path to the treasure!";
         validationMessage.style.color = "red";
-    return;
-}
+        return;
+    }
 
     return []; // No path found
 }
@@ -368,9 +395,11 @@ function availableTile(row, col) {
 }
 
 function displayPath(path) {
+    console.log("Displaying path:", path);
     // Display the new path
     path.forEach(function(coord) {
-        const [row, col] = coord.split(",").map(Number);
+        //const [row, col] = coord.split(",").map(Number); //for string coordinates
+        const { row, col } = coord; //for array coordinates
 
         const pathTile = document.querySelector(
             `.tile[data-row="${row}"][data-col="${col}"]`
@@ -394,6 +423,130 @@ function clearPath() {
     });
 }
 
+/* ========================================
+   DUNGEON SAVE LOAD FUNCTIONS
+   save and load dungeon from the backend
+======================================== */
+async function saveDungeon() {
+    const nameInput = document.querySelector("#dungeon-name");
+    const status = document.querySelector("#save-status");
+    const name = nameInput.value.trim();
+
+    if (!name) {
+        status.textContent = "Please enter a dungeon name.";
+        return;
+    }
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/dungeons", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: name,
+                grid: gridData
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.detail || "Failed to save dungeon.");
+        }
+
+        status.textContent = `Saved "${result.name}" (ID: ${result.id})!`;
+    } catch (error) {
+        status.textContent = `Save failed: ${error.message}`;
+    }
+}
+
+async function loadDungeonList() {
+    const dungeonList = document.querySelector("#dungeon-list");
+    const status = document.querySelector("#load-status");
+
+    try {
+        const response = await fetch("http://127.0.0.1:8000/api/dungeons");
+
+        if (!response.ok) {
+            throw new Error("Could not retrieve saved dungeons.");
+        }
+
+        const dungeons = await response.json();
+
+        // Clear existing options
+        dungeonList.innerHTML = `
+            <option value="">Select a dungeon...</option>
+        `;
+
+        // Add saved dungeons to dropdown
+        dungeons.forEach(dungeon => {
+            const option = document.createElement("option");
+
+            option.value = dungeon.id;
+            option.textContent = dungeon.name;
+
+            dungeonList.appendChild(option);
+        });
+
+        status.textContent = `${dungeons.length} dungeon(s) found.`;
+
+    } catch (error) {
+        status.textContent = `Failed to load dungeon list: ${error.message}`;
+    }
+}
+
+async function loadDungeon() {
+    const dungeonList = document.querySelector("#dungeon-list");
+    const nameInput = document.querySelector("#dungeon-name");
+    const status = document.querySelector("#load-status");
+
+    const dungeonId = dungeonList.value;
+
+    if (!dungeonId) {
+        status.textContent = "Please select a dungeon first.";
+        return;
+    }
+
+    try {
+        const response = await fetch(
+            `http://127.0.0.1:8000/api/dungeons/${dungeonId}`
+        );
+
+        const dungeon = await response.json();
+
+        if (!response.ok) {
+            throw new Error(dungeon.detail || "Failed to load dungeon.");
+        }
+
+        // Check grid dimensions
+        if (
+            dungeon.grid.length !== ROWS ||
+            dungeon.grid.some(row => row.length !== COLS)
+        ) {
+            throw new Error("Dungeon grid dimensions do not match.");
+        }
+
+        // Clear previous path visualization
+        clearPath();
+
+        // Restore dungeon grid
+        dungeon.grid.forEach((row, rowIndex) => {
+            row.forEach((tileType, colIndex) => {
+                const tile = document.querySelector(`.tile[data-row="${rowIndex}"][data-col="${colIndex}"]`);
+                updateTile(tile, tileType);
+            });
+        });
+
+        // Restore dungeon name
+        nameInput.value = dungeon.name;
+
+        status.textContent = `Loaded "${dungeon.name}" successfully!`;
+
+    } catch (error) {
+        status.textContent = `Load failed: ${error.message}`;
+    }
+}
 
 /* ========================================
    BUTTON INITIALIZATION
@@ -411,10 +564,52 @@ function setupToolbar() {
 
 function setupValidateButton() {
     validateButton.addEventListener("click", function() {
-        validateDungeon();
+        console.log("Validate button clicked!");
+        //validateDungeon();
+        validateDungeonWithAPI();
     });
 }
 
+function setupSaveButton() {
+    if(saveButton){
+        console.log("Save button found and event listener added.");
+    }else{
+        console.error("Save button not found!");
+        return;
+    }
+    saveButton.addEventListener("click", function() {
+        console.log("Save button clicked!");
+        saveDungeon();
+    });
+}
 
+function setupLoadButton() {
+    if(loadButton){
+        console.log("Load button found and event listener added."); 
+    }else{
+        console.error("Load button not found!");
+        return;
+    }
+    loadButton.addEventListener("click", function() {
+        console.log("Load button clicked!");
+        loadDungeon();
+    });
+}
+
+/* ========================================
+   GAME INITIALIZATION
+   Start the game
+======================================== */
+
+function main() {
+    console.log("Game started with grid size:", ROWS, "x", COLS);
+    createGrid();
+    setupToolbar();
+    setupValidateButton();
+    setupSaveButton();
+    setupLoadButton();
+    loadDungeonList();
+    selectTool("floor");
+}
 // Call main function to start the game
 main();

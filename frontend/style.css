@@ -1,39 +1,6 @@
-
-/* ========================================
-   1. DESIGN SETTINGS
-   Change shared values here
-======================================== */
-
-:root {
-    /* Colors */
-    --color-background: #171923;
-    --color-text: #f7fafc;
-    --color-panel: #2d3748;
-    --color-border: #4a5568;
-    --color-floor: #718096;
-    --color-player: #2b6cb0;
-    --color-treasure: #975a16;
-    --color-selected: #805ad5;
-    --color-focus: #f6e05e;
-
-    /* Spacing */
-    --space-small: 8px;
-    --space-medium: 16px;
-    --space-large: 24px;
-
-    /* Layout */
-    --app-width: 650px;
-    --grid-width: 600px;
-    --grid-gap: 3px;
-
-    /* Shape */
-    --radius-small: 3px;
-    --radius-medium: 12px;
-}
-
-/* ========================================
-   2. GLOBAL STYLES
-======================================== */
+/* ==============================
+   Global Styles
+================================= */
 
 * {
     box-sizing: border-box;
@@ -41,115 +8,281 @@
 
 body {
     margin: 0;
-    padding: var(--space-large);
-    background: var(--color-background);
-    color: var(--color-text);
-    font-family: Arial, sans-serif;
+    padding: 30px 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #171923;
+    color: #e2e8f0;
 }
 
-/* ========================================
-   3. PAGE LAYOUT
-======================================== */
-
-.app {
-    background: var(--color-panel);
-    border-radius: var(--radius-medium);
-    padding: var(--space-small);
-    width: 100%;
-    max-width: calc(var(--app-width) - 100px);
-    margin: 0 auto;
+.page-header {
     text-align: center;
+    margin-bottom: 35px;
 }
 
-/* ========================================
-   4. TOOLBAR
-======================================== */
+.page-header h1 {
+    margin-bottom: 10px;
+    font-size: 36px;
+    color: #f6c453;
+}
+
+.page-header p {
+    color: #a0aec0;
+    font-size: 15px;
+}
+
+/* ==============================
+   Main Layout
+================================= */
+
+.game-container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+section {
+    margin-bottom: 25px;
+    padding: 22px;
+    background: #242938;
+    border: 1px solid #394154;
+    border-radius: 10px;
+}
+
+section h2 {
+    margin-top: 0;
+    margin-bottom: 18px;
+    color: #f6c453;
+    font-size: 20px;
+}
+
+/* ==============================
+   Buttons
+================================= */
+
+button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 6px;
+    background: #4a5568;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+button:hover {
+    background: #64748b;
+    transform: translateY(-1px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid #f6c453;
+    outline-offset: 3px;
+}
+
+/* ==============================
+   Toolbar
+================================= */
 
 .toolbar {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: var(--space-small);
-    margin: var(--space-large) 0;
+    gap: 10px;
 }
 
-button {
-    padding: 16px 20px;
-    border: 1px solid #718096;
-    border-radius: var(--radius-medium);
-    background: var(--color-panel);
-    color: var(--color-text);
-    cursor: pointer;
+.tool-button {
+    background: #374151;
+    border: 1px solid #4b5563;
 }
 
-button:hover {
-    background: var(--color-border);
+.tool-button.active {
+    background: #b7791f;
+    border-color: #f6c453;
+    color: #ffffff;
 }
 
-button.active {
-    background: var(--color-selected);
+.tool-button.active:hover {
+    background: #d69e2e;
 }
 
-button.active:hover {
-    background: var(--color-selected);
-}
+/* ==============================
+   Save and Load Controls
+================================= */
 
-/* ========================================
-   5. DUNGEON GRID
-======================================== */
-
-#grid {
+.dungeon-management {
     display: grid;
-    gap: var(--grid-gap);
-    width: 100%;
-    max-width: var(--grid-width);
-    margin: var(--space-large) auto;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
 }
 
-/* ========================================
-   6. GRID TILES
-======================================== */
+.dungeon-management h2 {
+    grid-column: 1 / -1;
+    margin-bottom: 0;
+}
+
+.save-controls,
+.load-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.save-controls label,
+.load-controls label {
+    font-weight: bold;
+    color: #cbd5e0;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid #4a5568;
+    border-radius: 6px;
+    background: #171923;
+    color: #e2e8f0;
+    font-size: 14px;
+}
+
+input::placeholder {
+    color: #718096;
+}
+
+#save-dungeon-button,
+#load-dungeon-button {
+    background: #2f855a;
+}
+
+#save-dungeon-button:hover,
+#load-dungeon-button:hover {
+    background: #38a169;
+}
+
+#save-status,
+#load-status {
+    min-height: 18px;
+    margin: 0;
+    color: #9ae6b4;
+    font-size: 13px;
+}
+
+/* ==============================
+   Dungeon Grid
+================================= */
+
+.dungeon-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 3px;
+    width: 100%;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 10px;
+    background: #111827;
+    border: 1px solid #4a5568;
+    border-radius: 8px;
+}
 
 .tile {
-    display: grid;
-    place-items: center;
-
-    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
     min-width: 0;
     padding: 0;
-
-    border: 2px solid var(--color-border);
-    border-radius: var(--radius-medium);
-    background: var(--color-floor);
-
-    font-size: clamp(12px, 3vw, 22px);
+    border: 1px solid #4a5568;
+    border-radius: 3px;
+    background: #cbd5e0;
+    color: #1a202c;
+    font-size: clamp(12px, 2vw, 22px);
     cursor: pointer;
+}
+
+.tile:hover {
+    filter: brightness(1.15);
+    transform: none;
 }
 
 .tile.wall {
-    background: var(--color-panel);
+    background: #4a5568;
+    border-color: #718096;
 }
 
 .tile.player {
-    background: var(--color-player);
+    background: #3182ce;
 }
 
 .tile.treasure {
-    background: var(--color-treasure);
+    background: #d69e2e;
 }
 
 .tile.path {
     background: #68d391;
-    border-color: #48bb78;
-    outline: 3px solid #facc15;
-    outline-offset: -4px;
 }
 
-/* ========================================
-   7. ACCESSIBILITY
-======================================== */
+/* ==============================
+   Validation
+================================= */
 
-button:focus-visible {
-    outline: 2px solid var(--color-focus);
-    outline-offset: 1px;
+#validate-dungeon-button {
+    background: #805ad5;
+}
+
+#validate-dungeon-button:hover {
+    background: #9f7aea;
+}
+
+#validation-status {
+    min-height: 20px;
+    margin-bottom: 0;
+    color: #e2e8f0;
+    font-weight: bold;
+}
+
+/* ==============================
+   Footer
+================================= */
+
+footer {
+    margin-top: 35px;
+    text-align: center;
+    color: #718096;
+    font-size: 13px;
+}
+
+/* ==============================
+   Responsive Layout
+================================= */
+
+@media (max-width: 650px) {
+    body {
+        padding: 20px 12px;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+    }
+
+    section {
+        padding: 16px;
+    }
+
+    .dungeon-management {
+        grid-template-columns: 1fr;
+    }
+
+    .dungeon-management h2 {
+        grid-column: auto;
+    }
+
+    .dungeon-grid {
+        gap: 2px;
+        padding: 5px;
+    }
 }

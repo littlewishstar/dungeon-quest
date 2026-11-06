@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,22 +7,99 @@
     <link rel="stylesheet" href="style.css">
     <script src="game.js" defer></script>
 </head>
+
 <body>
-    <main class="app">
-        <h1>🏰 Dungeon Architect</h1>
-        <p>Design your dungeon. Can the hero reach the treasure?</p>
+    <header class="page-header">
+        <h1>Dungeon Architect</h1>
+        <p>Design your dungeon, find the path, and test your creation!</p>
+    </header>
 
-        <div class="toolbar">
-            <button data-tool="floor">Floor</button>
-            <button data-tool="wall">Wall</button>
-            <button data-tool="player">🧙 Player</button>
-            <button data-tool="treasure">💎 Treasure</button>
-            <button id="validate">Validate Dungeon</button>
-        </div>
+    <main class="game-container">
 
-        <p id="status">Selected tool: Floor</p>
-        <p id="validation-message">Click "Validate Dungeon" to check your design.</p>
-        <div id="grid" aria-label="Dungeon editor"></div>
+        <!-- Dungeon Management -->
+        <section class="dungeon-management">
+            <h2>Dungeon Management</h2>
+
+            <div class="save-controls">
+                <label for="dungeon-name">Dungeon Name</label>
+
+                <input
+                    type="text"
+                    id="dungeon-name"
+                    placeholder="Enter dungeon name"
+                    maxlength="100"
+                >
+
+                <button id="save-dungeon-button">
+                    Save Dungeon
+                </button>
+
+                <p id="save-status" role="status"></p>
+            </div>
+
+            <div class="load-controls">
+                <label for="dungeon-list">Saved Dungeons</label>
+
+                <select id="dungeon-list">
+                    <option value="">Select a dungeon...</option>
+                </select>
+
+                <button id="load-dungeon-button">
+                    Load Dungeon
+                </button>
+
+                <p id="load-status" role="status"></p>
+            </div>
+        </section>
+
+        <!-- Tool Selection -->
+        <section class="toolbar-section">
+            <h2>Dungeon Tools</h2>
+
+            <div class="toolbar">
+                <button class="tool-button active" data-tool="floor">
+                    Floor
+                </button>
+
+                <button class="tool-button" data-tool="wall">
+                    Wall
+                </button>
+
+                <button class="tool-button" data-tool="player">
+                    Player 🧙
+                </button>
+
+                <button class="tool-button" data-tool="treasure">
+                    Treasure 💎
+                </button>
+            </div>
+            <p id="current-tool" role="status">Current Tool: Floor</p>
+        </section>
+
+        <!-- Dungeon Grid -->
+        <section class="dungeon-section">
+            <h2>Dungeon Editor</h2>
+
+            <div id="dungeon-grid" class="dungeon-grid">
+                <!-- JavaScript generates the tiles here -->
+            </div>
+        </section>
+
+        <!-- Dungeon Validation -->
+        <section class="validation-section">
+            <h2>Dungeon Validation</h2>
+
+            <button id="validate-dungeon-button">
+                Validate Dungeon
+            </button>
+
+            <p id="validation-status" role="status"></p>
+        </section>
+
     </main>
+
+    <footer>
+        <p>Dungeon Architect - Portfolio Project</p>
+    </footer>
 </body>
 </html>
